@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <title>MyUploader</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8;" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <style type="text/css">
+      body { font-size: xx-large; }
+      input { font-size: x-large; }
+    </style>
+  </head>
+  <body>
+    <form method="post" enctype="multipart/form-data" action="">
+      <fieldset>
+        <caption>画像を 1 個送信</caption>
+        <br />
+        <input type="file" name="f4" accept="image/*" />
+        <input type="submit" onclick="this.style.display = 'none'; this.nextSibling.nextSibling.style.display = '';" />
+        <span id="wip" style="display:none; ">[送信中]</span>
+        <br />
+      </fieldset>
+    </form>
+    <br />
+
+    <form method="post" enctype="multipart/form-data" action="">
+      <fieldset>
+        <caption>画像をたくさん送信</caption>
+        <br />
+        <input type="file" name="f4" accept="image/*" multiple="1" />
+        <input type="submit" onclick="this.style.display = 'none'; this.nextSibling.nextSibling.style.display = '';" />
+        <span id="wip" style="display:none; ">[送信中]</span>
+        <br />
+      </fieldset>
+    </form>
+    <br />
+
+    <form method="post" enctype="multipart/form-data" action="">
+      <fieldset>
+        <caption>動画をたくさん送信</caption>
+        <br />
+        <input type="file" name="f4" accept="video/*" multiple="1" />
+        <input type="submit" onclick="this.style.display = 'none'; this.nextSibling.nextSibling.style.display = '';" />
+        <span id="wip" style="display:none; ">[送信中]</span>
+        <br />
+      </fieldset>
+    </form>
+    <br />
+
+    <form method="post" enctype="multipart/form-data" action="">
+      <fieldset>
+        <caption>音声をたくさん送信</caption>
+        <br />
+        <input type="file" name="f4" accept="audio/*" multiple="1" />
+        <input type="submit" onclick="this.style.display = 'none'; this.nextSibling.nextSibling.style.display = '';" />
+        <span id="wip" style="display:none; ">[送信中]</span>
+        <br />
+      </fieldset>
+    </form>
+    <br />
+
+    <form method="post" enctype="multipart/form-data" action="">
+      <fieldset>
+        <caption>ファイルをたくさん送信</caption>
+        <br />
+        <input type="file" name="f4" multiple="1" />
+        <input type="submit" onclick="this.style.display = 'none'; this.nextSibling.nextSibling.style.display = '';" />
+        <span id="wip" style="display:none; ">[送信中]</span>
+        <br />
+      </fieldset>
+    </form>
+    <br />
+
+  </body>
+</html>
