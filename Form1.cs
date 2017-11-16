@@ -44,7 +44,10 @@ namespace MyUploader {
                 .Where(a => a != null)
                 .ToArray();
 
-            comboBox1.Items.Add(Settings.Default.URL.Replace("localhost", Environment.MachineName + ".local"));
+            var local = Environment.MachineName + ".local";
+            if (IsItMe(local)) {
+                comboBox1.Items.Add(Settings.Default.URL.Replace("localhost", local));
+            }
             foreach (var ip in Dns.GetHostAddresses(Environment.MachineName)
                 .Where(ip => ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
                 .OrderBy(ip => connectedIPAddresses.Contains(ip) ? 0 : 1)
@@ -108,6 +111,15 @@ namespace MyUploader {
                     }
                 )
                 ;
+        }
+
+        private bool IsItMe(string local) {
+            try {
+                return Dns.GetHostAddresses(local).Select(p => p.ToString()).Intersect(Dns.GetHostAddresses(Environment.MachineName).Select(p => p.ToString())).Any();
+            }
+            catch (Exception) {
+                return false;
+            }
         }
 
         private IEnumerable<UnicastIPAddressInformation> Filter(UnicastIPAddressInformationCollection unicastAddresses, GatewayIPAddressInformationCollection gatewayAddresses) {
