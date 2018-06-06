@@ -7,6 +7,8 @@
 
 ;--------------------------------
 
+Unicode true
+
 !define APP "MyUploader"
 
 ; The name of the installer
@@ -28,11 +30,15 @@ RequestExecutionLevel admin
 !system 'MySign "bin\DEBUG\${APP}.exe"'
 !finalize 'MySign "%1"'
 
+XPStyle on
+LoadLanguageFile "${NSISDIR}\Contrib\Language files\Japanese-MeiryoUI.nlf"
+
 ;--------------------------------
 
 ; Pages
 
 Page directory
+Page components
 Page instfiles
 
 UninstPage uninstConfirm
@@ -41,7 +47,7 @@ UninstPage instfiles
 ;--------------------------------
 
 ; The stuff to install
-Section "Example2 (required)"
+Section ""
 
   SectionIn RO
   
@@ -64,7 +70,7 @@ Section "Example2 (required)"
 SectionEnd
 
 ; Optional section (can be disabled by the user)
-Section "Start Menu Shortcuts"
+Section "デスクトップに MyUploader ショートカット作成"
 
   ;CreateDirectory "$SMPROGRAMS\Example2"
   ;CreateShortcut "$SMPROGRAMS\Example2\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
@@ -72,6 +78,15 @@ Section "Start Menu Shortcuts"
   
   CreateShortcut "$DESKTOP\MyUploader.lnk" "$INSTDIR\${APP}.exe" "" "$INSTDIR\${APP}.exe"
   
+SectionEnd
+
+Section "セットアップ後に起動"
+  Exec '"$INSTDIR\${APP}.exe"'
+SectionEnd
+
+Section
+  IfErrors +2
+    SetAutoClose true
 SectionEnd
 
 ;--------------------------------
