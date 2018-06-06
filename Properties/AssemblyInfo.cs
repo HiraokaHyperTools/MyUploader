@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("HIRAOKA HYPERS TOOLS, Inc.")]
 [assembly: AssemblyProduct("MyUploader")]
-[assembly: AssemblyCopyright("Copyright (c) 2017")]
+[assembly: AssemblyCopyright("Copyright (c) 2017,2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -33,4 +33,4 @@ using System.Runtime.InteropServices;
 // 既定値にすることができます:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly:     AssemblyVersion("0.1")]
-[assembly: AssemblyFileVersion("0.2")]//here
+[assembly: AssemblyFileVersion("0.3")]//here
