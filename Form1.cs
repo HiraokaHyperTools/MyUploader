@@ -31,6 +31,7 @@ namespace MyUploader {
         public IKernel kernel { get; set; }
 
         private void Form1_Load(object sender, EventArgs e) {
+            
             // https://stackoverflow.com/a/13635038
             var connectedIPAddresses = NetworkInterface
                 .GetAllNetworkInterfaces()
@@ -46,7 +47,7 @@ namespace MyUploader {
 
             var local = Environment.MachineName + ".local";
             if (IsItMe(local)) {
-                comboBox1.Items.Add(Settings.Default.URL.Replace("localhost", local));
+                //comboBox1.Items.Add(Settings.Default.URL.Replace("localhost", local));
             }
             foreach (var ip in Dns.GetHostAddresses(Environment.MachineName)
                 .Where(ip => ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)

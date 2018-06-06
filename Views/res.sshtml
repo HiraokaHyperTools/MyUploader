@@ -13,11 +13,7 @@
   </head>
   <body>
     <p>ファイルを @Model.n 個アップロードしました。</p>
-    <p>
-      @Each.Files
-      <code>@Current</code><br />
-      @EndEach
-    </p>
+    <p>パソコンのマイピクチャをご確認ください。</p>
     <p>
       <a href="">戻る</a>
     </p>
