@@ -18,12 +18,15 @@ namespace MyUploader {
                 Res res = new Res() { Uploaded = true };
                 lock (typeof(WWW)) {
                     byte[] bin = new byte[4000];
+                    int numFiles = 0;
                     foreach (var f in Request.Files) {
                         // 2016-05-07 iPhone 192.168.2.47 image 012 みたいに
-                        var fn = String.Format("{0:yyyy-MM-dd} {1} {2} {3}"
+                        ++numFiles;
+                        var fn = String.Format("{0:yyyy-MM-dd} {1} {2} {3} {4}"
                             , DateTime.Now
                             , UAUt.Filter(Request.Headers["User-Agent"])
                             , Request.UserHostAddress
+                            , numFiles
                             , FNUt.Norm(f.Name)
                             );
                         String fp2;
