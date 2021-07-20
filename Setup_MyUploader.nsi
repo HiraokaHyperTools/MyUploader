@@ -11,11 +11,42 @@ Unicode true
 
 !define APP "MyUploader"
 
-; The name of the installer
-Name "${APP}"
+!system 'DefineAsmVer.exe "bin\DEBUG\${APP}.exe" "!define VER ""[FVER]"" " > Appver.tmp'
+!include "Appver.tmp"
+!searchreplace APV ${VER} "." "_"
 
-; The file to write
-OutFile "Setup_${APP}.exe"
+; The name of the installer
+Name "${APP} ${VER}"
+
+!ifdef INNER
+  OutFile "$%TEMP%\tempinstaller.exe"       ; not really important where this is
+  SetCompress off                           ; for speed
+!else
+  !echo "Outer invocation"
+ 
+  ; Call makensis again against current file, defining INNER.  This writes an installer for us which, when
+  ; it is invoked, will just write the uninstaller to some location, and then exit.
+ 
+  !makensis '/DINNER "${__FILE__}"' = 0
+ 
+  ; So now run that installer we just created as %TEMP%\tempinstaller.exe.
+ 
+  !system 'set __COMPAT_LAYER=RunAsInvoker&"$%TEMP%\tempinstaller.exe"' = 0
+ 
+  ; That will have written an uninstaller binary for us.  Now we sign it with your
+  ; favorite code signing tool.
+ 
+  !system 'MySign "$%TEMP%\uninstall.exe"' = 0
+ 
+  ; Good.  Now we can carry on writing the real installer.
+
+  ; The file to write
+  OutFile "Setup_${APP}_${APV}.exe"
+  SetCompressor /SOLID lzma
+
+  !system 'MySign "bin\DEBUG\${APP}.exe"'
+  !finalize 'MySign "%1"'
+!endif
 
 ; The default installation directory
 InstallDir "$PROGRAMFILES\${APP}"
@@ -27,11 +58,8 @@ InstallDirRegKey HKLM "Software\${APP}" "Install_Dir"
 ; Request application privileges for Windows Vista
 RequestExecutionLevel admin
 
-!system 'MySign "bin\DEBUG\${APP}.exe"'
-!finalize 'MySign "%1"'
-
 XPStyle on
-LoadLanguageFile "${NSISDIR}\Contrib\Language files\Japanese-MeiryoUI.nlf"
+LoadLanguageFile "${NSISDIR}\Contrib\Language files\Japanese.nlf"
 
 ;--------------------------------
 
@@ -46,8 +74,21 @@ UninstPage instfiles
 
 ;--------------------------------
 
+Function .onInit
+!ifdef INNER
+  ; If INNER is defined, then we aren't supposed to do anything except write out
+  ; the uninstaller.  This is better than processing a command line option as it means
+  ; this entire code path is not present in the final (real) installer.
+  SetSilent silent
+  WriteUninstaller "$%TEMP%\uninstall.exe"
+  SetErrorLevel 0  ; avoid exit code 2
+  Quit  ; just bail out quickly when running the "inner" installer
+!endif
+FunctionEnd
+
 ; The stuff to install
 Section ""
+!ifndef INNER
 
   SectionIn RO
   
@@ -61,20 +102,16 @@ Section ""
   WriteRegStr HKLM "SOFTWARE\${APP}" "Install_Dir" "$INSTDIR"
   
   ; Write the uninstall keys for Windows
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP}" "DisplayName" "${APP}"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP}" "DisplayName" "${APP} ${VER}"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP}" "UninstallString" '"$INSTDIR\uninstall.exe"'
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP}" "NoModify" 1
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP}" "NoRepair" 1
-  WriteUninstaller "uninstall.exe"
-  
+  File "$%TEMP%\uninstall.exe"
+
+!endif  
 SectionEnd
 
-; Optional section (can be disabled by the user)
 Section "デスクトップに MyUploader ショートカット作成"
-
-  ;CreateDirectory "$SMPROGRAMS\Example2"
-  ;CreateShortcut "$SMPROGRAMS\Example2\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
-  ;CreateShortcut "$SMPROGRAMS\Example2\Example2 (MakeNSISW).lnk" "$INSTDIR\example2.nsi" "" "$INSTDIR\example2.nsi" 0
   
   CreateShortcut "$DESKTOP\MyUploader.lnk" "$INSTDIR\${APP}.exe" "" "$INSTDIR\${APP}.exe"
   
@@ -104,10 +141,9 @@ Section "Uninstall"
   Delete "$INSTDIR\uninstall.exe"
 
   ; Remove shortcuts, if any
-  Delete "$SMPROGRAMS\${APP}\*.*"
+  Delete "$DESKTOP\MyUploader.lnk"
 
   ; Remove directories used
-  RMDir "$SMPROGRAMS\${APP}"
-  RMDir "$INSTDIR"
+  RMDir /r "$INSTDIR"
 
 SectionEnd

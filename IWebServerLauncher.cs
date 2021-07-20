@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyUploader {
-    public interface IWebServerLauncher {
+namespace MyUploader
+{
+    public interface IWebServerLauncher
+    {
         void Run();
     }
 }

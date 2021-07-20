@@ -6,9 +6,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyUploader {
-    class Allow7777 : IAllow7777 {
-        public void Run() {
+namespace MyUploader
+{
+    class Allow7777 : IAllow7777
+    {
+        public void Run()
+        {
             Fw2Controller fw2 = new Fw2Controller();
             var port = 7777;
             var allAllowed = fw2.EnumAllAllowed();
@@ -17,7 +20,8 @@ namespace MyUploader {
                 && allAllowed.Contains($"private,allow,tcp,{port}")
                 && allAllowed.Contains($"public,allow,tcp,{port}")
                 ;
-            if (!alreadyAllowed) {
+            if (!alreadyAllowed)
+            {
                 ProcessStartInfo psi = new ProcessStartInfo(GetType().Assembly.GetModules()[0].FullyQualifiedName, "/fw");
                 psi.Verb = "runas";
                 psi.UseShellExecute = true;

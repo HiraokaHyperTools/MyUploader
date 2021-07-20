@@ -5,72 +5,16 @@
 
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8;" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="stylesheet" href="static/dropzone.css" />
 
-    <style type="text/css">
-      body { font-size: xx-large; }
-      input { font-size: x-large; }
-    </style>
   </head>
   <body>
-    <form method="post" enctype="multipart/form-data" action="">
-      <fieldset>
-        <caption>画像を 1 個送信</caption>
-        <br />
-        <input type="file" name="f4" accept="image/*" />
-        <input type="submit" onclick="this.style.display = 'none'; this.nextSibling.nextSibling.style.display = '';" />
-        <span id="wip" style="display:none; ">[送信中]</span>
-        <br />
-      </fieldset>
+    <form method="post" enctype="multipart/form-data" action="." class="dropzone">
+        <div class="dz-message" data-dz-message><span>ファイルを送信</span></div>
     </form>
-    <br />
 
-    <form method="post" enctype="multipart/form-data" action="">
-      <fieldset>
-        <caption>画像をたくさん送信</caption>
-        <br />
-        <input type="file" name="f4" accept="image/*" multiple="1" />
-        <input type="submit" onclick="this.style.display = 'none'; this.nextSibling.nextSibling.style.display = '';" />
-        <span id="wip" style="display:none; ">[送信中]</span>
-        <br />
-      </fieldset>
-    </form>
-    <br />
+    <p>Powered by <a href="https://dropzone.gitbook.io/dropzone/" target="_blank">Dropzone</a>.</p>
 
-    <form method="post" enctype="multipart/form-data" action="">
-      <fieldset>
-        <caption>動画をたくさん送信</caption>
-        <br />
-        <input type="file" name="f4" accept="video/*" multiple="1" />
-        <input type="submit" onclick="this.style.display = 'none'; this.nextSibling.nextSibling.style.display = '';" />
-        <span id="wip" style="display:none; ">[送信中]</span>
-        <br />
-      </fieldset>
-    </form>
-    <br />
-
-    <form method="post" enctype="multipart/form-data" action="">
-      <fieldset>
-        <caption>音声をたくさん送信</caption>
-        <br />
-        <input type="file" name="f4" accept="audio/*" multiple="1" />
-        <input type="submit" onclick="this.style.display = 'none'; this.nextSibling.nextSibling.style.display = '';" />
-        <span id="wip" style="display:none; ">[送信中]</span>
-        <br />
-      </fieldset>
-    </form>
-    <br />
-
-    <form method="post" enctype="multipart/form-data" action="">
-      <fieldset>
-        <caption>ファイルをたくさん送信</caption>
-        <br />
-        <input type="file" name="f4" multiple="1" />
-        <input type="submit" onclick="this.style.display = 'none'; this.nextSibling.nextSibling.style.display = '';" />
-        <span id="wip" style="display:none; ">[送信中]</span>
-        <br />
-      </fieldset>
-    </form>
-    <br />
-
+    <script src="static/dropzone.js"></script>
   </body>
 </html>

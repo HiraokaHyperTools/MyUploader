@@ -6,21 +6,26 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Fw2 {
-    public enum NET_FW_PROFILE_TYPE {
+namespace Fw2
+{
+    public enum NET_FW_PROFILE_TYPE
+    {
         DOMAIN = 0, STANDARD = 1, CURRENT = 2,
     }
-    public enum NET_FW_IP_VERSION {
+    public enum NET_FW_IP_VERSION
+    {
         V4 = 0,
         V6 = 1,
         ANY = 2,
     }
-    public enum NET_FW_SCOPE {
+    public enum NET_FW_SCOPE
+    {
         ALL = 0,
         LOCAL_SUBNET = 1,
         CUSTOM = 2,
     }
-    public enum NET_FW_IP_PROTOCOL {
+    public enum NET_FW_IP_PROTOCOL
+    {
         TCP = 6,
         UDP = 17,
         ANY = 256,
@@ -28,7 +33,8 @@ namespace Fw2 {
 
     [Guid("E0483BA0-47FF-4D9C-A6D6-7741D0B195F7")]
     [InterfaceType(ComInterfaceType.InterfaceIsIDispatch)]
-    public interface INetFwOpenPort {
+    public interface INetFwOpenPort
+    {
         String Name { get; set; }
         NET_FW_IP_VERSION IpVersion { get; set; }
         NET_FW_IP_PROTOCOL Protocol { get; set; }
@@ -39,19 +45,23 @@ namespace Fw2 {
         bool BuiltIn { get; }
     }
 
-    public enum NET_FW_RULE_DIRECTION {
+    public enum NET_FW_RULE_DIRECTION
+    {
         IN = 1, OUT = 2,
     }
-    public enum NET_FW_ACTION {
+    public enum NET_FW_ACTION
+    {
         BLOCK = 0, ALLOW = 1,
     }
     [Flags]
-    public enum NET_FW_PROFILE_TYPE2 {
+    public enum NET_FW_PROFILE_TYPE2
+    {
         DOMAIN = 1, PRIVATE = 2, PUBLIC = 4, ALL = 0x7fffffff,
     }
     [Guid("AF230D27-BABA-4E42-ACED-F524F22CFCE2")]
     [InterfaceType(ComInterfaceType.InterfaceIsIDispatch)]
-    public interface INetFwRule {
+    public interface INetFwRule
+    {
         String Name { get; set; }
         String Description { get; set; }
         String ApplicationName { get; set; }
@@ -71,7 +81,8 @@ namespace Fw2 {
         NET_FW_ACTION Action { get; set; }
     }
 
-    public class Fw2Controller : IDisposable {
+    public class Fw2Controller : IDisposable
+    {
         MarshalByRefObject fwPolicy2;
         MarshalByRefObject fwRules;
 
@@ -86,25 +97,31 @@ namespace Fw2 {
         /// </list>
         /// </remarks>
         /// <returns></returns>
-        public string[] EnumAllAllowed() {
+        public string[] EnumAllAllowed()
+        {
             List<string> al = new List<string>();
             IEnumerator fwRulesEnum = (IEnumerator)fwRules.GetType().InvokeMember("_NewEnum", System.Reflection.BindingFlags.GetProperty, null, fwRules, new Object[0]);
-            while (fwRulesEnum.MoveNext()) {
+            while (fwRulesEnum.MoveNext())
+            {
                 INetFwRule fwRule = (INetFwRule)fwRulesEnum.Current;
 
-                try {
+                try
+                {
                     if (true
                         && fwRule.Direction == NET_FW_RULE_DIRECTION.IN
                         && fwRule.Enabled
                         && fwRule.Protocol == 6
                         && string.IsNullOrEmpty(fwRule.ApplicationName)
-                    ) {
+                    )
+                    {
                         bool allow = fwRule.Action == NET_FW_ACTION.ALLOW;
                         BitArray ports = Ut.GetPorts(fwRule.LocalPorts ?? "");
                         NET_FW_PROFILE_TYPE2 profs = fwRule.Profiles;
 
-                        for (int x = 0; x < 65536; x++) {
-                            if (ports[x]) {
+                        for (int x = 0; x < 65536; x++)
+                        {
+                            if (ports[x])
+                            {
                                 if (0 != (profs & NET_FW_PROFILE_TYPE2.DOMAIN)) al.Add("domain,allow,tcp," + x + "");
                                 if (0 != (profs & NET_FW_PROFILE_TYPE2.PRIVATE)) al.Add("private,allow,tcp," + x + "");
                                 if (0 != (profs & NET_FW_PROFILE_TYPE2.PUBLIC)) al.Add("public,allow,tcp," + x + "");
@@ -112,16 +129,19 @@ namespace Fw2 {
                         }
                     }
                 }
-                finally {
+                finally
+                {
                     Marshal.ReleaseComObject(fwRule);
                 }
             }
             return al.ToArray();
         }
 
-        public void AllowTCP(int port, NET_FW_PROFILE_TYPE2 profile) {
+        public void AllowTCP(int port, NET_FW_PROFILE_TYPE2 profile)
+        {
             MarshalByRefObject fwRule = (MarshalByRefObject)Activator.CreateInstance(Type.GetTypeFromProgID("HNetCfg.FWRule"));
-            try {
+            try
+            {
                 INetFwRule newRule = (INetFwRule)fwRule;
                 newRule.Name = string.Format("TCP {0}", port);
                 newRule.Description = "IsFwAllowed";
@@ -134,39 +154,51 @@ namespace Fw2 {
 
                 fwRules.GetType().InvokeMember("Add", System.Reflection.BindingFlags.InvokeMethod, null, fwRules, new Object[] { fwRule });
             }
-            finally {
+            finally
+            {
                 Marshal.ReleaseComObject(fwRule);
             }
         }
 
-        public Fw2Controller() {
+        public Fw2Controller()
+        {
             fwPolicy2 = (MarshalByRefObject)Activator.CreateInstance(Type.GetTypeFromProgID("HNetCfg.FwPolicy2"));
             fwRules = (MarshalByRefObject)fwPolicy2.GetType().InvokeMember("Rules", System.Reflection.BindingFlags.GetProperty, null, fwPolicy2, new Object[0]);
         }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             Marshal.ReleaseComObject(fwRules); fwRules = null;
             Marshal.ReleaseComObject(fwPolicy2); fwPolicy2 = null;
         }
 
-        class Ut {
-            public static BitArray GetPorts(String ports) {
+        class Ut
+        {
+            public static BitArray GetPorts(String ports)
+            {
                 BitArray bits = new BitArray(65536);
-                if (string.IsNullOrEmpty(ports)) {
+                if (string.IsNullOrEmpty(ports))
+                {
                     bits.SetAll(false);
                 }
-                else if (ports == "*") {
+                else if (ports == "*")
+                {
                     bits.SetAll(true);
                 }
-                else {
-                    foreach (String parts in ports.Split(',')) {
+                else
+                {
+                    foreach (String parts in ports.Split(','))
+                    {
                         String[] pair = parts.Split('-');
                         int from, to;
-                        if (pair.Length == 1 && PUt.TryParse(pair[0], out from)) {
+                        if (pair.Length == 1 && PUt.TryParse(pair[0], out from))
+                        {
                             bits[from] = true;
                         }
-                        else if (pair.Length == 2 && PUt.TryParse(pair[0], out from) && PUt.TryParse(pair[1], out to)) {
-                            while (from <= to) {
+                        else if (pair.Length == 2 && PUt.TryParse(pair[0], out from) && PUt.TryParse(pair[1], out to))
+                        {
+                            while (from <= to)
+                            {
                                 bits[from] = true;
                                 from++;
                             }
@@ -176,13 +208,17 @@ namespace Fw2 {
                 return bits;
             }
 
-            class PUt {
-                internal static bool TryParse(string name, out int port) {
-                    if (int.TryParse(name, out port)) {
+            class PUt
+            {
+                internal static bool TryParse(string name, out int port)
+                {
+                    if (int.TryParse(name, out port))
+                    {
                         return true;
                     }
                     #region IANA ports
-                    switch (name.ToLowerInvariant()) {
+                    switch (name.ToLowerInvariant())
+                    {
                         case "echo": port = 7; break;
                         case "discard": port = 9; break;
                         case "systat": port = 11; break;
