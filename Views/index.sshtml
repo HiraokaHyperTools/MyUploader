@@ -1,14 +1,17 @@
 ﻿<!DOCTYPE html>
 <html>
   <head>
-    <title>MyUploader</title>
+    <title>MyUploader using Dropzone.js</title>
 
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8;" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
     <link rel="stylesheet" href="static/dropzone.css" />
 
   </head>
   <body>
+    <p>Switch to <a href="~/uppy">Uppy</a>.</p>
+
     <form method="post" enctype="multipart/form-data" action="." class="dropzone">
         <div class="dz-message" data-dz-message><span>ファイルを送信</span></div>
     </form>

@@ -15,53 +15,57 @@ namespace MyUploader
         private static readonly object sync = new object();
         public WWW()
         {
-            Get("/", query =>
+            Get("/", query => View["Views/index.sshtml"]);
+            Get("/dropzone", query => View["Views/index.sshtml"]);
+            Get("/uppy", query => View["Views/uppy.sshtml"]);
+
+            Post("/", UploadFiles);
+            Post("/dropzone", UploadFiles);
+            Post("/uppy", UploadFiles);
+        }
+
+        private object UploadFiles(dynamic query)
+        {
+            Res res = new Res() { Uploaded = true };
+            lock (typeof(WWW))
             {
-                return View["Views/index.sshtml"];
-            });
-            Post("/", query =>
-            {
-                Res res = new Res() { Uploaded = true };
-                lock (typeof(WWW))
+                byte[] bin = new byte[4000];
+                int numFiles = 0;
+                foreach (var f in Request.Files)
                 {
-                    byte[] bin = new byte[4000];
-                    int numFiles = 0;
-                    foreach (var f in Request.Files)
+                    // 2016-05-07 iPhone 192.168.2.47 image 012 みたいに
+                    ++numFiles;
+                    var fn = String.Format("{0:yyyy-MM-dd} {1} {2} {3} {4}"
+                        , DateTime.Now
+                        , UAUt.Filter(Request.Headers["User-Agent"])
+                        , Request.UserHostAddress
+                        , numFiles
+                        , FNUt.Norm(f.Name)
+                        );
+                    String fp2;
+                    lock (sync)
                     {
-                        // 2016-05-07 iPhone 192.168.2.47 image 012 みたいに
-                        ++numFiles;
-                        var fn = String.Format("{0:yyyy-MM-dd} {1} {2} {3} {4}"
-                            , DateTime.Now
-                            , UAUt.Filter(Request.Headers["User-Agent"])
-                            , Request.UserHostAddress
-                            , numFiles
-                            , FNUt.Norm(f.Name)
-                            );
-                        String fp2;
-                        lock (sync)
+                        for (int x = 1; ; x++)
                         {
-                            for (int x = 1; ; x++)
-                            {
-                                fp2 = Path.Combine(Settings.Default.SaveDir, Path.GetFileNameWithoutExtension(fn) + " " + x.ToString("000") + Path.GetExtension(fn));
-                                if (!File.Exists(fp2)) break;
-                            }
-                            File.Create(fp2).Close();
+                            fp2 = Path.Combine(Settings.Default.SaveDir, Path.GetFileNameWithoutExtension(fn) + " " + x.ToString("000") + Path.GetExtension(fn));
+                            if (!File.Exists(fp2)) break;
                         }
-                        var si = f.Value;
-                        using (var os = File.Create(fp2))
-                        {
-                            while (true)
-                            {
-                                int r = si.Read(bin, 0, bin.Length);
-                                if (r < 1) break;
-                                os.Write(bin, 0, r);
-                            }
-                        }
-                        res.Files.Add(fp2);
+                        File.Create(fp2).Close();
                     }
+                    var si = f.Value;
+                    using (var os = File.Create(fp2))
+                    {
+                        while (true)
+                        {
+                            int r = si.Read(bin, 0, bin.Length);
+                            if (r < 1) break;
+                            os.Write(bin, 0, r);
+                        }
+                    }
+                    res.Files.Add(fp2);
                 }
-                return Response.AsJson(new { ok = 1 });
-            });
+            }
+            return Response.AsJson(new { ok = 1 });
         }
 
         class Res

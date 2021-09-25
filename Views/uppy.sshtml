@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <title>MyUploader using Uppy</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8;" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="stylesheet" href="static/uppy.css" />
+
+  </head>
+  <body>
+    <p>Switch to <a href="~/">Dropzone.js</a>.</p>
+
+    <div class="UppyDragDrop"></div>
+
+    <p>Powered by <a href="https://uppy.io/" target="_blank">Uppy</a>.</p>
+
+    <script src="static/uppy.js"></script>
+    <script>
+      var uppy = new Uppy.Core();
+      uppy.use(Uppy.Dashboard, {
+        target: '.UppyDragDrop',
+        inline: true,
+        disableThumbnailGenerator: true
+      });
+      uppy.use(Uppy.XHRUpload, {
+        endpoint: document.location.href,
+        timeout: 60 * 1000 * 3
+      });
+    </script>
+  </body>
+</html>
